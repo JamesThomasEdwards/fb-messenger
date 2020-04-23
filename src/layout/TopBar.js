@@ -4,17 +4,19 @@ import { useQuery } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 
 import { TopBarWrapper, Nav } from "./TopBar.styles";
+import { VIEWER } from "../user/Profile"
 
-const VIEWER = gql`
-  query {
-    viewer {
-      fullname
-      work {
-        company
-      }
-    }
-  }
-`;
+// const VIEWER = gql`
+//   query {
+//     viewer {
+//       fullname
+//       work {
+//         id
+//         company
+//       }
+//     }
+//   }
+// `;
 
 const TopBar = () => {
   const { data, loading, error } = useQuery(VIEWER);
@@ -45,3 +47,4 @@ const TopBar = () => {
 };
 
 export default TopBar;
+

@@ -4,24 +4,47 @@ import { gql } from "apollo-boost";
 
 import { StyledPage } from "./styles";
 import AboutWork from "./Work";
+import { WORK_QUERY_FRAGMENT } from "./Work"
 
-const VIEWER = gql`
+export const USER_FRAGMENT = gql`
+  fragment UpdateUserForm on User {
+    id
+    fullname
+    username
+  }
+`;
+
+export const VIEWER = gql`
   query {
     viewer {
-      id
-      username
-      fullname
+      ...UpdateUserForm
+        ...WorkQuery
     }
   }
+  ${ USER_FRAGMENT }
+  ${ WORK_QUERY_FRAGMENT }
+`;
+
+const UPADTE_USER_MUTATION = gql`
+  mutation updateUser($user: UpdateUserInput!) {
+    updateUser(user:$user) {
+      user{
+        ...UpdateUserForm
+      }
+    }
+  }
+  ${ USER_FRAGMENT }
 `;
 
 const Profile = () => {
   const [fullname, setFullname] = useState("");
   const { data, loading, error } = useQuery(VIEWER);
+  const [ mutateUser, {loading: updatingUser, error: errorOnUpdatingUser} ] = useMutation(UPADTE_USER_MUTATION);
+
 
   const updateUser = (e) => {
     e.preventDefault();
-
+    mutateUser({ variables: { user: { id: data.viewer.id, fullname } }});
     // 🚧 you'll invoke a mutation here
   };
 
@@ -48,7 +71,7 @@ const Profile = () => {
           <button type="submit">Save</button>
         </form>
         <hr />
-        <AboutWork userId={data.viewer.id} />
+        <AboutWork user={data.viewer} />
       </div>
     </StyledPage>
   );
